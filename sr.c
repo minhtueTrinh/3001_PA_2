@@ -123,22 +123,6 @@ void A_input(struct pkt packet)
     if (TRACE > 0)
       printf("----A: uncorrupted ACK %d is received\n", acknumber);
 
-    /* check if new ACK or duplicate */
-    if (windowcount != 0) {
-          int seqfirst = buffer[windowfirst].seqnum;
-          int seqlast = buffer[windowlast].seqnum;
-          /* check case when seqnum has and hasn't wrapped */
-          if (((seqfirst <= seqlast) && (packet.acknum >= seqfirst && packet.acknum <= seqlast)) ||
-              ((seqfirst > seqlast) && (packet.acknum >= seqfirst || packet.acknum <= seqlast))) {
-
-            /* packet is a new ACK */
-            if (TRACE > 0)
-              printf("----A: ACK %d is not a duplicate\n",packet.acknum);
-
-            buffer[packet.acknum%WINDOWSIZE].acknum = 1;
-            windowcount--;
-            new_ACKs;
-
 
 	    /* slide window by the number of packets ACKed */
         if(buffer[windowfirst].seqnum == packet.acknum){
