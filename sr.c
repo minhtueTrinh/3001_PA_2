@@ -132,19 +132,13 @@ void A_input(struct pkt packet)
         }
 
 	    /* start timer again if there are still more unacked packets in window */
-            stoptimer(A);
-            if (windowcount > 0)
-              starttimer(A, RTT);
-
-          }
+        if (A_left != A_nextseqnum)
+            starttimer(A,RTT);
+    }else{
+        if (TRACE > 0){
+            printf ("----A: corrupted ACK is received, do nothing!\n");
         }
-        else
-          if (TRACE > 0)
-        printf ("----A: duplicate ACK received, do nothing!\n");
-  }
-  else
-    if (TRACE > 0)
-      printf ("----A: corrupted ACK is received, do nothing!\n");
+    }
 }
 
 /* called when A's timer goes off */
