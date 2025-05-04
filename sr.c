@@ -112,9 +112,16 @@ void A_input(struct pkt packet)
 
   /* if received ACK is not corrupted */
   if (!IsCorrupted(packet)) {
+    int acknumber = packet.acknum;
+    int ack_index = (acknumber - A_left + SEQSPACE) % SEQSPACE;
+
+    /*Check whether the ACK is new in the sender's window*/
+    if(!acked[acknumber] && (ack_index < WINDOWSIZE)){
+        acked[acknumber] = true;
+        stoptimer(A);
+    }
     if (TRACE > 0)
-      printf("----A: uncorrupted ACK %d is received\n",packet.acknum);
-    total_ACKs_received++;
+      printf("----A: uncorrupted ACK %d is received\n", acknumber);
 
     /* check if new ACK or duplicate */
     if (windowcount != 0) {
