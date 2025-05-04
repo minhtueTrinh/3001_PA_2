@@ -118,6 +118,7 @@ void A_input(struct pkt packet)
     /*Check whether the ACK is new in the sender's window*/
     if(!acked[acknumber] && (ack_index < WINDOWSIZE)){
         acked[acknumber] = true;
+        new_ACKs++;
         stoptimer(A);
     }
     if (TRACE > 0)
