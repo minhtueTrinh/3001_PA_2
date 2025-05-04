@@ -126,13 +126,9 @@ void A_input(struct pkt packet)
 
 
 	    /* slide window by the number of packets ACKed */
-        if(buffer[windowfirst].seqnum == packet.acknum){
-            for (i = 0; i < WINDOWSIZE; i++){
-                if (buffer[windowfirst].acknum == 1){
-                    windowfirst = (windowfirst + 1)%WINDOWSIZE;
-                    ack_count--;
-                }
-            }
+        while (acked[A_left]){
+            acked[A_left] = false;
+            A_left = (A_left + 1) % SEQSPACE;
         }
 
 	    /* start timer again if there are still more unacked packets in window */
