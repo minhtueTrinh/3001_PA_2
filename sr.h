@@ -1,5 +1,6 @@
 #ifndef SR_H
 #define SR_H
+#define BIDIRECTIONAL 0
 
 /* Constants for Selective Repeat */
 #define RTT  16.0

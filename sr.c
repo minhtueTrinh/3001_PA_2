@@ -93,7 +93,7 @@ void A_output(struct msg message)
       printf("Sending packet %d to layer 3\n", A_nextseqnum);
     
     /*Move to the next packet, +1 sequence number*/
-    A_nextseqnum = (A_nextseqnum + 1) % SEQSPACE; //wrapping back to 0
+    A_nextseqnum = (A_nextseqnum + 1) % SEQSPACE; /*wrapping back to 0*/
   }
   /* if blocked,  window is full */
   else {
@@ -144,9 +144,10 @@ void A_input(struct pkt packet)
 /* called when A's timer goes off */
 void A_timerinterrupt(void)
 {
+    int i;
     if (TRACE > 0)
         printf("----A: time out,resend packets!\n");
-    for (int i = 0; i < WINDOWSIZE; i++){
+    for (i = 0; i < WINDOWSIZE; i++){
         int sequence = (A_left + i) % SEQSPACE; /*calculate the sequnec number of the i-th packet. Wrapped by % SEQSPACE*/
         if (!acked[sequence]){ /*If not yet acked*/
             tolayer3(A, buffer[sequence]); /*Resend packet*/
@@ -163,8 +164,9 @@ void A_timerinterrupt(void)
 /* entity A routines are called. You can use it to do any initialization */
 void A_init(void)
 {
+    int i; 
     /*Initialise each ACK to false*/
-    for (int i = 0; i < SEQSPACE; i++){
+    for (i = 0; i < SEQSPACE; i++){
         acked[i] = false;
     }
     A_left = 0; /*Start at the base of the sender window*/
