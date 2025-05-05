@@ -55,20 +55,20 @@ bool IsCorrupted(struct pkt packet)
 
 
 /********* Sender (A) variables and functions ************/
-static struct pkt buffer[SEQSPACE]; // create buffer for all potential packets that may occur in the sender's window
-static bool acked[SEQSPACE]; //track the status of each packet 
-static int A_left = 0; // the left most or the base or the window
-static int A_nextseqnum = 0; // next sequence number to use
+static struct pkt buffer[SEQSPACE]; /* create buffer for all potential packets that may occur in the sender's window*/
+static bool acked[SEQSPACE]; /*track the status of each packet */
+static int A_left = 0; /*the left most or the base or the window*/
+static int A_nextseqnum = 0; /*next sequence number to use*/ 
 
 /* called from layer 5 (application layer), passed the message to be sent to other side */
 void A_output(struct msg message)
 {
   struct pkt sendpkt;
   int i;
-  int window_unACKed = (A_nextseqnum - A_left + SEQSPACE) % SEQSPACE; //the no of unACKed packets in the sender's window
+  int window_unACKed = (A_nextseqnum - A_left + SEQSPACE) % SEQSPACE; /*the no of unACKed packets in the sender's window*/
 
   /* if not blocked waiting on ACK */
-  if (window_unACKed< WINDOWSIZE) { //Check whether the window is full
+  if (window_unACKed< WINDOWSIZE) { /*Check whether the window is full*/
     if (TRACE > 1)
       printf("----A: New message arrives, send window is not full, send new messge to layer3!\n");
 
@@ -81,7 +81,7 @@ void A_output(struct msg message)
 
     /*store new packets in sender's buffer at its seqnum --> allows SR if errors occur*/
     buffer[A_nextseqnum] = sendpkt;
-    acked[A_nextseqnum] = false; // marked as unACKed --> used for tracking
+    acked[A_nextseqnum] = false; /* marked as unACKed --> used for tracking*/
 
     /*Transmit to B*/
     tolayer3(A, sendpkt);
@@ -144,21 +144,19 @@ void A_input(struct pkt packet)
 /* called when A's timer goes off */
 void A_timerinterrupt(void)
 {
-    int i;
     if (TRACE > 0)
-        printf("----A: time out, resend packets!\n");
-    if (windowcount > 0){
-        for (i = 0; i < windowcount; i++){
-            if (TRACE > 0){
-                printf("----A: resending packet %d\n", (buffer[(windowfirst+i)%WINDOWSIZE]).seqnum);
-            tolayer3(A, buffer[(windowfirst + i)% WINDOWSIZE]);
+        printf("----A: time out,resend packets!\n");
+    for (int i = 0; i < WINDOWSIZE; i++){
+        int sequence = (A_left + i) % SEQSPACE;
+        if (!acked[sequence]){
+            tolayer3(A, buffer[sequence]);
             packets_resent++;
-            }
-            starttimer(A,RTT);
+            if (TRACE > 0)
+                printf("---A: resending packet %d\n");
         }
     }
+    starttimer(A,RTT);
 }
-
 
 
 /* the following routine will be called once (only) before any other */
