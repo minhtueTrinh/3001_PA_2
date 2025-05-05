@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include "emulator.h"
 #include "gbn.h"
+#include "sr.h"
 
 /* ******************************************************************
    Go Back N protocol.  Adapted from J.F.Kurose
@@ -99,6 +100,7 @@ void A_output(struct msg message)
   else {
     if (TRACE > 0)
       printf("----A: New message arrives, send window is full\n");
+      window_full++;
   }
 }
 
@@ -108,7 +110,6 @@ void A_output(struct msg message)
 */
 void A_input(struct pkt packet)
 {
-  int i;
 
   /* if received ACK is not corrupted */
   if (!IsCorrupted(packet)) {
